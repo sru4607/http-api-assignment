@@ -8,37 +8,47 @@
   <script type="text/babel">
     const handleResponse = (xhr) => {
       
-
+      //Create element where ID or success will go
       const title = document.createElement("h1");
+      //Create element where message will go
       const mainContent = document.createElement("p");
-
+      //Get the data type
       const type = xhr.getResponseHeader('content-type');
-
+      //Get the content element
       const content = document.querySelector("#content");
-
+      //Remove old content
       content.innerHTML = "";
-
+      //Append a horizontal line
       content.appendChild(document.createElement('hr'));
+      //If the element is of type XML
       if(type === 'text/xml'){
+        //Print out response
         console.log(xhr.responseXML);
+        //Check ID
         if(xhr.responseXML.querySelector('id')){
           title.innerHTML = xhr.responseXML.querySelector('id').textContent;
         }
         else{
           title.innerHTML = "Success";
         }
-        mainContent.innerHTML = xhr.responseXML.querySelector('message').textContent; 
+        //Set message
+        mainContent.innerHTML = "Message: " + xhr.responseXML.querySelector('message').textContent; 
       }
+      //If element is not XML default to JSON
       else{
+        //Parse Object
         const obj = JSON.parse(xhr.response);
+        console.log(obj);
+        //Check ID
         title.innerHTML = obj.id || "Success";
+        //Set message
         mainContent.innerHTML = obj.message;
       }
-
+      //Append title and message
       content.appendChild(title);
       content.appendChild(mainContent);
     }
-
+    //Sends a request to the URL for the accepted type
     const sendAjax = (url, acceptedType) => {
       const xhr = new XMLHttpRequest();
       xhr.open("GET", url);
@@ -46,7 +56,7 @@
       xhr.onload = () => handleResponse(xhr);
       xhr.send();
     }
-
+    //On startup get the send button and add the send AJAX function to the click event
     const init = () => {
       const sendButton = document.querySelector("#send");
       const sendAjaxRequest = () => sendAjax(document.querySelector("#page").value, document.querySelector("#type").value);
